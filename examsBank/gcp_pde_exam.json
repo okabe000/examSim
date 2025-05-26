@@ -1,7 +1,9 @@
 {
   "examInfo": {
+    "id": "gcp_pde_exam_001",
     "name": "GCP Professional Data Engineer",
     "description": "Practice exam for Google Cloud Professional Data Engineer certification",
+    "difficulty": "medium",
     "totalTime": 120,
     "totalQuestions": 6,
     "domainDistribution": {

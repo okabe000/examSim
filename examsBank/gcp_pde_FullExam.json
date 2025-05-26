@@ -1,0 +1,758 @@
+{
+  "examInfo": {
+    "id": "gcp_pde_exam_002",
+    "name": "GCP Professional Data Engineer",
+    "description": "Practice exam for Google Cloud Professional Data Engineer certification",
+    "difficulty": "medium",
+    "totalTime": 120,
+    "totalQuestions": 60,
+    "domainDistribution": {
+      "Designing data processing systems": 0.26,
+      "Building and operationalizing data processing systems": 0.26,
+      "Operationalizing machine learning models": 0.24,
+      "Ensuring solution quality": 0.24
+    }
+  },
+  "domains": [
+    {
+      "domain": "Designing data processing systems",
+      "questions": [
+        {
+          "id": "DPS1",
+          "question": "Your company wants to migrate its on-premises Hadoop jobs to a managed service on Google Cloud. The jobs are a mix of Spark, Hive, and Pig scripts. Which GCP service is the most appropriate choice for this migration?",
+          "choices": {
+            "A": "Cloud Dataflow",
+            "B": "Dataproc",
+            "C": "BigQuery",
+            "D": "Cloud Functions"
+          },
+          "correct_choice": "B",
+          "explanation": "Dataproc is a managed Apache Hadoop and Apache Spark service that lets you run open-source data processing frameworks in a simplified, cost-effective way."
+        },
+        {
+          "id": "DPS2",
+          "question": "You are designing a data warehouse for a retail company. The requirements are to support SQL queries, handle petabyte-scale data, and automatically scale compute resources. Which GCP service should you choose?",
+          "choices": {
+            "A": "Cloud SQL",
+            "B": "Cloud Spanner",
+            "C": "BigQuery",
+            "D": "Cloud Storage"
+          },
+          "correct_choice": "C",
+          "explanation": "BigQuery is a serverless, highly scalable, and cost-effective cloud data warehouse that's designed for business agility."
+        },
+        {
+          "id": "DPS3",
+          "question": "A new mobile application will generate a continuous stream of user interaction data. You need to design a system to ingest this data in real-time with low latency. What is the most suitable GCP service for this purpose?",
+          "choices": {
+            "A": "Cloud Storage",
+            "B": "Cloud Pub/Sub",
+            "C": "Cloud SQL",
+            "D": "Bigtable"
+          },
+          "correct_choice": "B",
+          "explanation": "Cloud Pub/Sub is a fully-managed, real-time messaging service that allows you to send and receive messages between independent applications."
+        },
+        {
+          "id": "DPS4",
+          "question": "Your team needs to process a large volume of unstructured data stored in Cloud Storage. The processing logic is complex and requires a parallel data processing framework. Which GCP service should you recommend?",
+          "choices": {
+            "A": "Cloud Dataflow",
+            "B": "Cloud Functions",
+            "C": "Cloud Run",
+            "D": "App Engine"
+          },
+          "correct_choice": "A",
+          "explanation": "Cloud Dataflow is a managed service for developing and executing a wide range of data processing patterns including ETL, batch computation, and continuous computation."
+        },
+        {
+          "id": "DPS5",
+          "question": "When designing a relational database for a transactional application on GCP, which service would you choose for a globally distributed, strongly consistent database?",
+          "choices": {
+            "A": "Cloud SQL",
+            "B": "Bigtable",
+            "C": "Cloud Spanner",
+            "D": "Firestore"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Spanner is the only enterprise-grade, globally-distributed, and strongly-consistent database service built for the cloud specifically to combine the benefits of relational database structure with non-relational horizontal scale."
+        },
+        {
+          "id": "DPS6",
+          "question": "You need to store and analyze time-series data from a large number of IoT devices. The data will be used for real-time monitoring and anomaly detection. Which database is optimized for this use case?",
+          "choices": {
+            "A": "Cloud SQL",
+            "B": "BigQuery",
+            "C": "Cloud Spanner",
+            "D": "Bigtable"
+          },
+          "correct_choice": "D",
+          "explanation": "Bigtable is a sparsely populated table that can scale to billions of rows and thousands of columns, enabling you to store terabytes or even petabytes of data. It is a great choice for time-series data."
+        },
+        {
+          "id": "DPS7",
+          "question": "Your company wants to create a data lake on Google Cloud. Which service should be the foundation for storing a vast amount of structured and unstructured data in its native format?",
+          "choices": {
+            "A": "BigQuery",
+            "B": "Cloud Storage",
+            "C": "Cloud SQL",
+            "D": "Datastore"
+          },
+          "correct_choice": "B",
+          "explanation": "Cloud Storage is an object storage service that is ideal for building a data lake due to its scalability, durability, and cost-effectiveness for storing large volumes of data."
+        },
+        {
+          "id": "DPS8",
+          "question": "You need to choose a data transformation tool for your data analysts who are comfortable with SQL and prefer a visual interface. The tool should allow them to build ETL pipelines without writing code. Which service fits these requirements?",
+          "choices": {
+            "A": "Cloud Dataflow",
+            "B": "Cloud Dataprep by Trifacta",
+            "C": "Cloud Functions",
+            "D": "Dataproc"
+          },
+          "correct_choice": "B",
+          "explanation": "Cloud Dataprep is an intelligent data service for visually exploring, cleaning, and preparing structured and unstructured data for analysis, reporting, and machine learning."
+        },
+        {
+          "id": "DPS9",
+          "question": "When selecting a storage solution for frequently accessed, structured data for a web application, with a need for low-latency reads and writes, which of the following is the most suitable?",
+          "choices": {
+            "A": "Cloud Storage Coldline",
+            "B": "Cloud Storage Nearline",
+            "C": "Firestore",
+            "D": "BigQuery"
+          },
+          "correct_choice": "C",
+          "explanation": "Firestore is a flexible, scalable database for mobile, web, and server development from Firebase and Google Cloud. It's well-suited for applications that need low-latency reads and writes."
+        },
+        {
+          "id": "DPS10",
+          "question": "You are designing a system that requires orchestrating complex workflows with dependencies between tasks, including starting a Dataproc cluster, running a job, and then tearing it down. Which service is designed for this purpose?",
+          "choices": {
+            "A": "Cloud Functions",
+            "B": "Cloud Scheduler",
+            "C": "Cloud Composer",
+            "D": "Cloud Tasks"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Composer is a fully managed workflow orchestration service built on Apache Airflow, enabling you to create, schedule, monitor, and manage workflows that span across clouds and on-premises data centers."
+        },
+        {
+          "id": "DPS11",
+          "question": "A financial services company wants to analyze trading data in real-time to detect fraudulent activities. The data arrives at a very high velocity. Which combination of services would be most effective for this use case?",
+          "choices": {
+            "A": "Cloud Storage and BigQuery",
+            "B": "Cloud Pub/Sub and Cloud Dataflow",
+            "C": "Cloud SQL and Cloud Functions",
+            "D": "Bigtable and Dataproc"
+          },
+          "correct_choice": "B",
+          "explanation": "Cloud Pub/Sub is ideal for ingesting high-velocity streaming data, and Cloud Dataflow can process this data in real-time to perform complex analysis like fraud detection."
+        },
+        {
+          "id": "DPS12",
+          "question": "Your organization has a requirement to store and query both structured and semi-structured data within the same platform. The platform must support standard SQL. What is the best choice?",
+          "choices": {
+            "A": "Cloud SQL",
+            "B": "Bigtable",
+            "C": "BigQuery",
+            "D": "Cloud Spanner"
+          },
+          "correct_choice": "C",
+          "explanation": "BigQuery excels at storing and querying both structured and semi-structured data (like JSON) using standard SQL, making it a versatile data warehousing solution."
+        },
+        {
+          "id": "DPS13",
+          "question": "For a new application, you need a NoSQL document database that is serverless, highly scalable, and offers rich querying capabilities for mobile and web clients. Which GCP service is the most appropriate?",
+          "choices": {
+            "A": "Bigtable",
+            "B": "Firestore",
+            "C": "Cloud SQL",
+            "D": "Cloud Memorystore"
+          },
+          "correct_choice": "B",
+          "explanation": "Firestore is a NoSQL document database built for automatic scaling, high performance, and ease of application development."
+        },
+        {
+          "id": "DPS14",
+          "question": "You are designing a batch processing job that needs to run on a schedule once every day. The job is a simple script that can be executed in a container. What is a cost-effective and serverless way to run this job?",
+          "choices": {
+            "A": "A Compute Engine instance with a cron job",
+            "B": "Cloud Run scheduled with Cloud Scheduler",
+            "C": "A persistent Dataproc cluster",
+            "D": "App Engine standard environment"
+          },
+          "correct_choice": "B",
+          "explanation": "Cloud Run is a serverless platform that enables you to run stateless containers. When combined with Cloud Scheduler, it's a cost-effective way to run scheduled batch jobs."
+        },
+        {
+          "id": "DPS15",
+          "question": "A gaming company wants to store player profiles and game state information. The data needs to be accessed with very low latency. Which in-memory data store service should be used?",
+          "choices": {
+            "A": "Cloud SQL",
+            "B": "BigQuery",
+            "C": "Cloud Memorystore",
+            "D": "Cloud Storage"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Memorystore provides a fully managed in-memory data store service built on Redis and Memcached, delivering lightning-fast performance for applications that require sub-millisecond latency."
+        },
+        {
+          "id": "DPS16",
+          "question": "You need to process data that has a well-defined schema and will be queried using complex analytical queries. The dataset size is in the terabytes. Which storage and processing combination is most suitable?",
+          "choices": {
+            "A": "Cloud Storage and Cloud Functions",
+            "B": "Firestore and Cloud Run",
+            "C": "BigQuery",
+            "D": "Bigtable and Dataproc"
+          },
+          "correct_choice": "C",
+          "explanation": "BigQuery is the ideal solution for large-scale analytical querying on structured data due to its columnar storage and massively parallel processing capabilities."
+        }
+      ]
+    },
+    {
+      "domain": "Building and operationalizing data processing systems",
+      "questions": [
+        {
+          "id": "BODPS1",
+          "question": "You have developed a Dataflow pipeline. What is the recommended way to manage the dependencies for your pipeline code?",
+          "choices": {
+            "A": "Install dependencies manually on each worker",
+            "B": "Specify the dependencies in a requirements.txt file and use the --requirements_file pipeline option",
+            "C": "Store the dependencies in a Cloud Storage bucket and download them at runtime",
+            "D": "Use a custom container image with the dependencies pre-installed"
+          },
+          "correct_choice": "B",
+          "explanation": "Using a requirements.txt file with the --requirements_file pipeline option is the standard and recommended way to manage Python dependencies in a Dataflow pipeline."
+        },
+        {
+          "id": "BODPS2",
+          "question": "How can you optimize a BigQuery query that frequently filters on a specific column?",
+          "choices": {
+            "A": "Create a secondary index on that column",
+            "B": "Use a wildcard table",
+            "C": "Partition the table based on that column",
+            "D": "Export the data to Cloud Storage and filter it there"
+          },
+          "correct_choice": "C",
+          "explanation": "Partitioning a table in BigQuery based on a column can significantly improve query performance and reduce costs by pruning the amount of data scanned."
+        },
+        {
+          "id": "BODPS3",
+          "question": "You are running a streaming Dataflow job and notice that the watermark is not advancing. What is a common cause for this issue?",
+          "choices": {
+            "A": "The input source has stopped sending data",
+            "B": "There is a 'hot key' in the data causing a bottleneck",
+            "C": "The workers do not have enough CPU",
+            "D": "The output sink is too slow"
+          },
+          "correct_choice": "B",
+          "explanation": "A hot key, which is a key with a disproportionately large number of values, can cause a single worker to become overloaded and prevent the watermark from advancing in a streaming Dataflow job."
+        },
+        {
+          "id": "BODPS4",
+          "question": "You want to run a Spark job on a Dataproc cluster. What is the most common way to submit the job?",
+          "choices": {
+            "A": "Using the 'gcloud dataproc jobs submit spark' command",
+            "B": "SSH into the master node and run 'spark-submit'",
+            "C": "Using the Cloud Console to manually upload and run the job",
+            "D": "Emailing the job to the Dataproc service account"
+          },
+          "correct_choice": "A",
+          "explanation": "The 'gcloud dataproc jobs submit spark' command is the recommended and most common way to submit Spark jobs to a Dataproc cluster from the command line."
+        },
+        {
+          "id": "BODPS5",
+          "question": "How can you ensure that a Cloud Function that writes to a database does not exceed the database's connection limit when processing a large number of events from Pub/Sub?",
+          "choices": {
+            "A": "Increase the memory allocated to the Cloud Function",
+            "B": "Configure the Cloud Function to have a maximum number of instances",
+            "C": "Use a connection pool in the Cloud Function's code",
+            "D": "Set a timeout for the Cloud Function"
+          },
+          "correct_choice": "B",
+          "explanation": "By setting the maximum number of instances for a Cloud Function, you can control its concurrency and prevent it from overwhelming downstream services like a database."
+        },
+        {
+          "id": "BODPS6",
+          "question": "You are building a data pipeline with Cloud Composer. How should you manage connections to other GCP services like BigQuery and Cloud Storage?",
+          "choices": {
+            "A": "Hardcode the connection details in your DAG files",
+            "B": "Use Airflow's built-in connection management system",
+            "C": "Store connection details in a text file in a Cloud Storage bucket",
+            "D": "Create a separate service account for each connection"
+          },
+          "correct_choice": "B",
+          "explanation": "Airflow (and therefore Cloud Composer) has a built-in feature for managing connections, which is the secure and recommended way to handle credentials and connection details."
+        },
+        {
+          "id": "BODPS7",
+          "question": "In BigQuery, what is the purpose of clustering a table?",
+          "choices": {
+            "A": "To encrypt the data in the table",
+            "B": "To sort the data based on the values in one or more columns",
+            "C": "To create a backup of the table",
+            "D": "To grant access to the table to other users"
+          },
+          "correct_choice": "B",
+          "explanation": "Clustering in BigQuery co-locates related data based on the contents of one or more columns. This can improve query performance for filters and aggregations on the clustered columns."
+        },
+        {
+          "id": "BODPS8",
+          "question": "You have a streaming pipeline that reads from Pub/Sub and writes to BigQuery. The pipeline is experiencing high latency. Which metric in Cloud Monitoring would be most helpful in diagnosing the issue?",
+          "choices": {
+            "A": "CPU utilization of the Dataflow workers",
+            "B": "System latency",
+            "C": "Number of messages in the Pub/Sub subscription",
+            "D": "BigQuery slot utilization"
+          },
+          "correct_choice": "B",
+          "explanation": "System latency in Dataflow monitoring shows the time it takes for a data element to be processed through the entire pipeline, which is a key indicator of overall pipeline latency."
+        },
+        {
+          "id": "BODPS9",
+          "question": "When creating a Dataproc cluster, what is the benefit of using preemptible virtual machines (VMs) for worker nodes?",
+          "choices": {
+            "A": "Higher processing performance",
+            "B": "Increased fault tolerance",
+            "C": "Significantly lower cost",
+            "D": "Longer uptime guarantees"
+          },
+          "correct_choice": "C",
+          "explanation": "Preemptible VMs offer the same machine types and options as regular compute instances and last for up to 24 hours, but at a much lower price. This makes them a cost-effective choice for fault-tolerant workloads."
+        },
+        {
+          "id": "BODPS10",
+          "question": "You need to export data from BigQuery to a CSV file in Cloud Storage. The table is very large. What is the most efficient way to do this?",
+          "choices": {
+            "A": "Use the BigQuery web UI to export the data",
+            "B": "Write a Dataflow pipeline to read from BigQuery and write to Cloud Storage",
+            "C": "Use the 'bq extract' command-line tool",
+            "D": "Query the table with 'SELECT *' and save the results"
+          },
+          "correct_choice": "C",
+          "explanation": "The 'bq extract' command is the recommended and most efficient way to export large amounts of data from BigQuery to Cloud Storage."
+        },
+        {
+          "id": "BODPS11",
+          "question": "Your Dataflow pipeline is failing with an 'out of memory' error. What is the first step you should take to resolve this issue?",
+          "choices": {
+            "A": "Increase the number of workers",
+            "B": "Change the worker machine type to one with more memory",
+            "C": "Rewrite the pipeline to use less memory",
+            "D": "Add more swap space to the workers"
+          },
+          "correct_choice": "B",
+          "explanation": "Increasing the memory of the worker machine type is the most direct way to address 'out of memory' errors in a Dataflow pipeline."
+        },
+        {
+          "id": "BODPS12",
+          "question": "How can you trigger a Cloud Function when a new file is uploaded to a Cloud Storage bucket?",
+          "choices": {
+            "A": "Configure a Cloud Pub/Sub notification for the bucket",
+            "B": "Use a Cloud Scheduler job to check for new files",
+            "C": "Set up a Cloud Storage trigger for the Cloud Function",
+            "D": "Write a custom script that monitors the bucket"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Functions has a direct integration with Cloud Storage, allowing you to trigger a function based on events like object creation, deletion, or archival."
+        },
+        {
+          "id": "BODPS13",
+          "question": "You are managing a Cloud Composer environment and want to add a new Python dependency. What is the correct procedure?",
+          "choices": {
+            "A": "SSH into the Airflow workers and run 'pip install'",
+            "B": "Update the list of PyPI packages in the Cloud Composer environment's settings",
+            "C": "Add the dependency to a requirements.txt file in your DAGs folder",
+            "D": "Recreate the Cloud Composer environment with the new dependency"
+          },
+          "correct_choice": "B",
+          "explanation": "The proper way to manage PyPI dependencies in a Cloud Composer environment is to update the list of packages in the environment's configuration through the GCP Console or gcloud command."
+        },
+        {
+          "id": "BODPS14",
+          "question": "In BigQuery, if you want to query a set of tables that have a common prefix, what feature should you use?",
+          "choices": {
+            "A": "Views",
+            "B": "Wildcard tables",
+            "C": "Partitioned tables",
+            "D": "Clustered tables"
+          },
+          "correct_choice": "B",
+          "explanation": "Wildcard tables allow you to query multiple tables using a concise SQL statement. The wildcard is represented by an asterisk (*) in the table name."
+        },
+        {
+          "id": "BODPS15",
+          "question": "What is the primary purpose of using 'Fusion' in Cloud Data Fusion?",
+          "choices": {
+            "A": "To merge data from multiple sources",
+            "B": "To write custom code for data transformations",
+            "C": "To create and manage data pipelines through a graphical interface",
+            "D": "To monitor the performance of data pipelines"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Data Fusion provides a graphical interface for building and managing ETL/ELT data pipelines, abstracting the underlying complexity of the processing engine."
+        },
+        {
+          "id": "BODPS16",
+          "question": "You are working with a large dataset in BigQuery and want to improve the performance of queries that filter on a date column. What should you do?",
+          "choices": {
+            "A": "Cluster the table by the date column",
+            "B": "Partition the table by the date column",
+            "C": "Create a separate table for each date",
+            "D": "Convert the date column to a string"
+          },
+          "correct_choice": "B",
+          "explanation": "Time-unit column partitioning in BigQuery is specifically designed to improve query performance and reduce costs for queries that filter on date or timestamp columns."
+        }
+      ]
+    },
+    {
+      "domain": "Operationalizing machine learning models",
+      "questions": [
+        {
+          "id": "OMLM1",
+          "question": "You have trained a TensorFlow model and want to deploy it for online predictions. Which GCP service is designed for this purpose?",
+          "choices": {
+            "A": "BigQuery ML",
+            "B": "Vertex AI Prediction",
+            "C": "Cloud Dataflow",
+            "D": "Dataproc"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex AI Prediction is a managed service that makes it easy to deploy and serve machine learning models for online and batch predictions."
+        },
+        {
+          "id": "OMLM2",
+          "question": "What is the primary benefit of using BigQuery ML?",
+          "choices": {
+            "A": "It allows you to train deep learning models with custom architectures.",
+            "B": "It enables you to create and execute machine learning models in BigQuery using standard SQL queries.",
+            "C": "It provides a managed environment for running Jupyter notebooks.",
+            "D": "It is designed for real-time inference with low latency."
+          },
+          "correct_choice": "B",
+          "explanation": "BigQuery ML lets data analysts and data scientists build and operationalize ML models on planet-scale structured or semi-structured data, directly inside BigQuery, using simple SQL."
+        },
+        {
+          "id": "OMLM3",
+          "question": "You need to build and manage a complete machine learning workflow, from data preparation to model deployment and monitoring. Which GCP service provides a unified platform for this?",
+          "choices": {
+            "A": "Cloud Functions",
+            "B": "Cloud Composer",
+            "C": "Vertex AI",
+            "D": "Cloud Data Fusion"
+          },
+          "correct_choice": "C",
+          "explanation": "Vertex AI is a unified MLOps platform that helps you build, deploy, and scale ML models faster, with pre-trained and custom tooling within a single platform."
+        },
+        {
+          "id": "OMLM4",
+          "question": "How can you monitor the performance of a deployed machine learning model on Vertex AI Prediction?",
+          "choices": {
+            "A": "By checking the logs in Cloud Logging",
+            "B": "By using Vertex AI Model Monitoring",
+            "C": "By setting up custom dashboards in Cloud Monitoring",
+            "D": "By analyzing the billing reports"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex AI Model Monitoring is specifically designed to monitor for drift and anomalies in your deployed models, helping you maintain high model performance."
+        },
+        {
+          "id": "OMLM5",
+          "question": "You want to automate the retraining of your machine learning model whenever new data becomes available. Which service can help you orchestrate this MLOps pipeline?",
+          "choices": {
+            "A": "Cloud Scheduler",
+            "B": "Vertex AI Pipelines",
+            "C": "Cloud Functions",
+            "D": "Cloud Run"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex AI Pipelines helps you to automate, monitor, and govern your ML systems by orchestrating your ML workflow in a serverless manner."
+        },
+        {
+          "id": "OMLM6",
+          "question": "What is the purpose of the 'explain' feature in Vertex AI Prediction?",
+          "choices": {
+            "A": "To provide a detailed explanation of the model's architecture",
+            "B": "To give insights into how the model's features contributed to a particular prediction",
+            "C": "To explain the cost of running the prediction service",
+            "D": "To describe the training process of the model"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex Explainable AI helps you understand your model's outputs for classification and regression tasks. It provides feature attributions to help you interpret your model's predictions."
+        },
+        {
+          "id": "OMLM7",
+          "question": "You need to train a custom machine learning model using your own training code in a containerized environment. Which Vertex AI service should you use?",
+          "choices": {
+            "A": "Vertex AI Prediction",
+            "B": "Vertex AI Training",
+            "C": "Vertex AI Workbench",
+            "D": "BigQuery ML"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex AI Training allows you to run your training application on Google Cloud's infrastructure, using either pre-built containers or your own custom containers."
+        },
+        {
+          "id": "OMLM8",
+          "question": "When deploying a model to Vertex AI Prediction, what is an 'endpoint'?",
+          "choices": {
+            "A": "The physical location of the server hosting the model",
+            "B": "A specific version of your trained model",
+            "C": "A service that you can hit with new data to get predictions from your deployed models",
+            "D": "The source code of your model"
+          },
+          "correct_choice": "C",
+          "explanation": "In Vertex AI, you deploy models to an endpoint. An endpoint provides a service URL where you can send prediction requests."
+        },
+        {
+          "id": "OMLM9",
+          "question": "You want to perform A/B testing on two different versions of a machine learning model. How can you achieve this on Vertex AI Prediction?",
+          "choices": {
+            "A": "Deploy each model to a separate endpoint and manually split the traffic",
+            "B": "Deploy both models to the same endpoint and configure traffic splitting",
+            "C": "Use Cloud Load Balancing to distribute traffic between two endpoints",
+            "D": "This is not a supported feature in Vertex AI Prediction"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex AI Prediction allows you to deploy multiple models to the same endpoint and split traffic between them, which is ideal for A/B testing and canary deployments."
+        },
+        {
+          "id": "OMLM10",
+          "question": "For what kind of machine learning tasks would you typically use AutoML Tables?",
+          "choices": {
+            "A": "Image classification",
+            "B": "Natural language processing",
+            "C": "Training models on structured, tabular data",
+            "D": "Time-series forecasting with custom models"
+          },
+          "correct_choice": "C",
+          "explanation": "AutoML Tables enables developers with limited machine learning expertise to automatically build and deploy state-of-the-art machine learning models on structured data."
+        },
+        {
+          "id": "OMLM11",
+          "question": "What is a 'model' in the context of BigQuery ML?",
+          "choices": {
+            "A": "A SQL query that performs a prediction",
+            "B": "A trained machine learning model stored as a BigQuery object",
+            "C": "A view that contains the training data",
+            "D": "A JavaScript user-defined function for transformations"
+          },
+          "correct_choice": "B",
+          "explanation": "When you run a 'CREATE MODEL' statement in BigQuery ML, the trained model is stored as a BigQuery object that you can then use for evaluation, inspection, and prediction."
+        },
+        {
+          "id": "OMLM12",
+          "question": "You are building a model to predict customer churn. You have a large dataset in BigQuery. What is the most straightforward way to train and serve this model if you are proficient in SQL?",
+          "choices": {
+            "A": "Export the data to Cloud Storage and use Vertex AI Training",
+            "B": "Use BigQuery ML to train and serve the model directly in BigQuery",
+            "C": "Load the data into a Pandas DataFrame and use scikit-learn",
+            "D": "Set up a Dataproc cluster and use Spark MLlib"
+          },
+          "correct_choice": "B",
+          "explanation": "BigQuery ML is the most direct and efficient way to train and serve a machine learning model on data that is already in BigQuery, especially for users who are comfortable with SQL."
+        },
+        {
+          "id": "OMLM13",
+          "question": "Which of the following is a key feature of Vertex AI Workbench?",
+          "choices": {
+            "A": "It provides a serverless environment for model deployment",
+            "B": "It is a managed Jupyter notebook environment for the entire data science workflow",
+            "C": "It automatically builds machine learning models from tabular data",
+            "D": "It is a tool for orchestrating MLOps pipelines"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex AI Workbench provides a managed, Jupyter-based environment that allows data scientists to interact with data, develop models, and run experiments."
+        },
+        {
+          "id": "OMLM14",
+          "question": "You have deployed a model to Vertex AI Prediction and want to get batch predictions for a large dataset stored in Cloud Storage. What is the best approach?",
+          "choices": {
+            "A": "Write a script that reads the data line by line and sends it to the online prediction endpoint",
+            "B": "Use the batch prediction feature of Vertex AI",
+            "C": "Load the data into BigQuery and use BigQuery ML",
+            "D": "Create a Dataflow job to process the data and send it for prediction"
+          },
+          "correct_choice": "B",
+          "explanation": "Vertex AI Prediction has a dedicated batch prediction feature that is optimized for getting predictions on large datasets without the need for a real-time endpoint."
+        }
+      ]
+    },
+    {
+      "domain": "Ensuring solution quality",
+      "questions": [
+        {
+          "id": "ESQ1",
+          "question": "You are designing a data pipeline that must be resilient to failures. If a step in the pipeline fails, it should be automatically retried. Which GCP service provides built-in retry mechanisms for orchestrating such pipelines?",
+          "choices": {
+            "A": "Cloud Functions",
+            "B": "Cloud Scheduler",
+            "C": "Cloud Composer",
+            "D": "Cloud Run"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Composer, being built on Apache Airflow, has robust support for task retries, making it ideal for building fault-tolerant data pipelines."
+        },
+        {
+          "id": "ESQ2",
+          "question": "How can you ensure that only authorized users can access a BigQuery dataset?",
+          "choices": {
+            "A": "By encrypting the dataset with a customer-managed encryption key",
+            "B": "By using Identity and Access Management (IAM) roles and permissions",
+            "C": "By placing the BigQuery project in a VPC Service Controls perimeter",
+            "D": "By enabling audit logging for the dataset"
+          },
+          "correct_choice": "B",
+          "explanation": "IAM is the standard way to control access to GCP resources, including BigQuery datasets. You can grant predefined or custom roles to users, groups, or service accounts."
+        },
+        {
+          "id": "ESQ3",
+          "question": "You need to monitor the health and performance of your Dataflow jobs. Which GCP service provides detailed monitoring charts and alerting for Dataflow metrics?",
+          "choices": {
+            "A": "Cloud Logging",
+            "B": "Cloud Trace",
+            "C": "Cloud Monitoring",
+            "D": "Cloud Debugger"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Monitoring provides dashboards, charts, and alerting capabilities for a wide range of GCP services, including detailed metrics for Dataflow jobs."
+        },
+        {
+          "id": "ESQ4",
+          "question": "What is the best practice for managing secrets, such as API keys and database passwords, in a data pipeline?",
+          "choices": {
+            "A": "Store them in a configuration file in Cloud Storage",
+            "B": "Hardcode them in the source code",
+            "C": "Use Secret Manager",
+            "D": "Pass them as command-line arguments"
+          },
+          "correct_choice": "C",
+          "explanation": "Secret Manager is a secure and convenient storage system for API keys, passwords, certificates, and other sensitive data. It provides centralized control and auditing."
+        },
+        {
+          "id": "ESQ5",
+          "question": "You want to ensure that your data processing system can handle a sudden increase in data volume. What is a key design principle to follow?",
+          "choices": {
+            "A": "Use the largest possible machine types",
+            "B": "Design the system to be scalable and elastic",
+            "C": "Provision enough capacity for the peak load",
+            "D": "Manually monitor the system and add resources as needed"
+          },
+          "correct_choice": "B",
+          "explanation": "Designing for scalability and elasticity, using managed services that can automatically scale, is the best way to handle variable workloads and ensure performance."
+        },
+        {
+          "id": "ESQ6",
+          "question": "How can you track the lineage of your data, from its source to its final destination in BigQuery?",
+          "choices": {
+            "A": "By manually documenting the data flow in a spreadsheet",
+            "B": "Using Cloud Data Catalog's data lineage feature",
+            "C": "By analyzing the logs of the data processing jobs",
+            "D": "This is not possible in GCP"
+          },
+          "correct_choice": "B",
+          "explanation": "Cloud Data Catalog can automatically track data lineage for systems like BigQuery and Data Fusion, providing a visual representation of how data is transformed and moved."
+        },
+        {
+          "id": "ESQ7",
+          "question": "You are deploying a new version of a Dataflow pipeline. What is a good strategy to minimize the risk of introducing a bug that could corrupt your data?",
+          "choices": {
+            "A": "Deploy the new pipeline and immediately shut down the old one",
+            "B": "Run the new pipeline in parallel with the old one and compare the results",
+            "C": "Thoroughly test the new pipeline with a small, representative dataset",
+            "D": "Only deploy new pipelines during off-peak hours"
+          },
+          "correct_choice": "B",
+          "explanation": "Running the new pipeline in parallel with the old one allows you to validate its correctness and performance before making it the production pipeline, minimizing risk."
+        },
+        {
+          "id": "ESQ8",
+          "question": "What is the purpose of VPC Service Controls?",
+          "choices": {
+            "A": "To control the network traffic between VMs in a VPC",
+            "B": "To create a security perimeter around GCP services to prevent data exfiltration",
+            "C": "To manage the firewall rules for a VPC",
+            "D": "To monitor the performance of network traffic"
+          },
+          "correct_choice": "B",
+          "explanation": "VPC Service Controls allow you to define a service perimeter around projects and resources, which helps to mitigate the risk of data exfiltration from supported services."
+        },
+        {
+          "id": "ESQ9",
+          "question": "You need to ensure that your BigQuery data is encrypted at rest. What do you need to do?",
+          "choices": {
+            "A": "Enable encryption when you create the dataset",
+            "B": "Nothing, BigQuery encrypts all data at rest by default",
+            "C": "Create a customer-managed encryption key and apply it to the table",
+            "D": "Encrypt the data before loading it into BigQuery"
+          },
+          "correct_choice": "B",
+          "explanation": "All data in BigQuery is encrypted at rest by default, with no additional action required from the user."
+        },
+        {
+          "id": "ESQ10",
+          "question": "Which tool can you use to find, curate, and describe your data assets across GCP?",
+          "choices": {
+            "A": "Cloud Monitoring",
+            "B": "Cloud Logging",
+            "C": "Data Catalog",
+            "D": "BigQuery"
+          },
+          "correct_choice": "C",
+          "explanation": "Data Catalog is a fully managed and scalable data discovery and metadata management service. It empowers organizations to quickly discover, manage, and understand all their data in Google Cloud."
+        },
+        {
+          "id": "ESQ11",
+          "question": "You want to set up an alert that notifies you when a BigQuery query takes longer than a certain amount of time to execute. What should you use?",
+          "choices": {
+            "A": "Cloud Trace",
+            "B": "A custom script that queries the BigQuery audit logs",
+            "C": "Cloud Monitoring alerting based on BigQuery metrics",
+            "D": "BigQuery's built-in alerting feature"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Monitoring can ingest BigQuery metrics, including query execution time, and you can configure alerting policies to be notified when these metrics cross a defined threshold."
+        },
+        {
+          "id": "ESQ12",
+          "question": "What is a key benefit of using a service account to run a data processing job?",
+          "choices": {
+            "A": "It allows you to run the job with your personal user credentials",
+            "B": "It provides a specific identity for the job, allowing for more granular access control",
+            "C": "It makes the job run faster",
+            "D": "It automatically encrypts the data processed by the job"
+          },
+          "correct_choice": "B",
+          "explanation": "Service accounts provide a distinct identity for services and applications. This allows you to grant them a specific set of permissions, following the principle of least privilege."
+        },
+        {
+          "id": "ESQ13",
+          "question": "You are concerned about the cost of your BigQuery usage. What is a good first step to take to analyze your costs?",
+          "choices": {
+            "A": "Examine the BigQuery audit logs in Cloud Logging",
+            "B": "Use the BigQuery cost analysis tools in the GCP Console",
+            "C": "Set a hard limit on the number of bytes that can be processed per day",
+            "D": "Switch to flat-rate pricing"
+          },
+          "correct_choice": "B",
+          "explanation": "The GCP Console provides tools to view and analyze your BigQuery costs, allowing you to identify which queries or users are responsible for the most usage."
+        },
+        {
+          "id": "ESQ14",
+          "question": "How can you verify the integrity of data uploaded to Cloud Storage?",
+          "choices": {
+            "A": "By visually inspecting the file after upload",
+            "B": "Cloud Storage automatically verifies data integrity",
+            "C": "By calculating a checksum (e.g., MD5 or CRC32C) of the file before uploading and comparing it with the checksum provided by Cloud Storage after the upload",
+            "D": "By uploading the file twice and comparing the two copies"
+          },
+          "correct_choice": "C",
+          "explanation": "Calculating and comparing checksums is a standard and reliable method for verifying that a file has not been corrupted during transmission."
+        }
+      ]
+    }
+  ]
+}

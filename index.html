@@ -5,19 +5,32 @@
   <title>General Exam Simulator</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 2rem; margin: 0; }
-    .main-content { margin-right: 320px; }
+    body { font-family: Arial, sans-serif; padding: 0; margin: 0; }
+    .container {
+      display: flex;
+      flex-direction: row;
+      min-height: 100vh;
+      width: 100vw;
+    }
+    .main-content {
+      flex: 1 1 0;
+      margin-right: 0;
+      padding: 2rem;
+      min-width: 0;
+      overflow-wrap: break-word;
+      box-sizing: border-box;
+    }
     .side-menu {
-      position: fixed;
-      right: 0;
-      top: 0;
-      width: 300px;
-      height: 100%;
+      width: 420px;
+      min-width: 320px;
+      max-width: 480px;
       background: #f5f5f5;
       padding: 2rem;
       overflow-y: auto;
       border-left: 1px solid #ccc;
       box-sizing: border-box;
+      position: relative;
+      height: auto;
     }
     .exam-result {
       padding: 1rem;
@@ -26,7 +39,8 @@
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    .question-container { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+    .question-container { margin-bottom: 1.5rem; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; word-break: break-word; background: #fff; }
+    .question-container p { margin: 0 0 0.5em 0; white-space: pre-line; word-break: break-word; font-size: 1.08em; line-height: 1.5; }
     .choices label { display: block; margin: 0.3rem 0; }
     #submit-btn { margin-top: 1.5rem; padding: 0.5rem 1rem; font-size: 1rem; }
     #result { margin-top: 2rem; font-size: 1.2rem; font-weight: bold; }
@@ -100,31 +114,34 @@
   </style>
 </head>
 <body>
-  <div class="main-content">
-    <h1>Exam Simulator</h1>
-    <div id="exam"></div>
-  </div>
-  <div class="side-menu" id="side-menu">
-    <h2>Exam Controls</h2>
-    <div class="control-section">
-      <select id="examSelect" class="exam-selector">
-        <option value="">-- Select an exam --</option>
-      </select>
-      <div id="timer" style="margin: 10px 0;"></div>
-      <div class="exam-info" id="examInfo"></div>
-      <button id="submit-btn" style="display:none; width: 100%;">Submit Exam</button>
-      <div class="grid-box" id="gridBox" style="margin: 15px 0;"></div>
-      <div id="result"></div>
+  <div class="container">
+    <div class="main-content">
+      <h1>Exam Simulator</h1>
+      <div id="exam"></div>
     </div>
-    <div class="stats-section">
-      <h3>Exam Statistics</h3>
-      <canvas id="progressChart" class="progress-chart"></canvas>
-      <div id="domainProgress"></div>
+    <div class="side-menu" id="side-menu">
+      <h2>Exam Controls</h2>
+      <div class="control-section">
+        <select id="examSelect" class="exam-selector">
+          <option value="">-- Select an exam --</option>
+        </select>
+        <div id="timer" style="margin: 10px 0;"></div>
+        <div class="exam-info" id="examInfo"></div>
+        <button id="submit-btn" style="display:none; width: 100%;">Submit Exam</button>
+        <div class="grid-box" id="gridBox" style="margin: 15px 0;"></div>
+        <div id="result"></div>
+      </div>
+      <div class="stats-section">
+        <h3>Exam Statistics</h3>
+        <canvas id="progressChart" class="progress-chart"></canvas>
+        <div id="domainProgress"></div>
+      </div>
+      <div id="submission-history"></div>
     </div>
-    <div id="submission-history"></div>
   </div>
-
   <script>
+    console.log('ExamSim script loaded');
+
     let questions = [];
     let correctAnswers = {};
     let previousResults = {};
@@ -134,6 +151,7 @@
       try {
         console.log('Loading available exams...');
         const response = await fetch('http://localhost:3000/examSIm/examsBank/');
+        console.log('Exam list fetch response:', response);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -143,18 +161,27 @@
         const examSelect = document.getElementById('examSelect');
         examSelect.innerHTML = '<option value="">-- Select an exam --</option>';
 
+        if (!jsonFiles.length) {
+          examSelect.innerHTML = '<option value="">No exams found</option>';
+          document.body.insertAdjacentHTML('afterbegin', '<div style="color:red;font-weight:bold;">No exams found in examsBank directory!</div>');
+        }
+
         for (const file of jsonFiles) {
           try {
+            console.log('Fetching exam file:', file);
             const examResponse = await fetch(`http://localhost:3000/examSIm/examsBank/${file}`);
+            console.log('Exam file fetch response:', examResponse);
             if (!examResponse.ok) {
               console.error(`Failed to load exam ${file}:`, examResponse.statusText);
               continue;
             }
             const examData = await examResponse.json();
+            console.log('Loaded exam data:', examData);
             if (examData.examInfo && examData.examInfo.name) {
               const option = document.createElement('option');
+              // Show id, name, difficulty, and total questions
               option.value = file;
-              option.textContent = examData.examInfo.name;
+              option.textContent = `[${examData.examInfo.id}] ${examData.examInfo.name} | Difficulty: ${examData.examInfo.difficulty || 'N/A'} | Questions: ${examData.examInfo.totalQuestions}`;
               examSelect.appendChild(option);
             } else {
               console.error(`Exam ${file} is missing required metadata`);
@@ -166,8 +193,209 @@
       } catch (error) {
         console.error('Error loading exams:', error);
         document.getElementById('examSelect').innerHTML = '<option value="">Error loading exams</option>';
+        document.body.insertAdjacentHTML('afterbegin', '<div style="color:red;font-weight:bold;">Error loading exams! See console for details.</div>');
       }
     }
+
+    // --- Move loadExam definition here so it is available to all event listeners ---
+    function loadExam(data) {
+      const examDiv = document.getElementById("exam");
+      const gridBox = document.getElementById("gridBox");
+      examDiv.innerHTML = "";
+      document.getElementById("result").innerHTML = "";
+      gridBox.innerHTML = "";
+      questions = [];
+      correctAnswers = {};
+
+      let questionNumber = 1;
+      data.domains.forEach(domain => {
+        // Add domain header
+        const domainHeader = document.createElement("h3");
+        domainHeader.textContent = domain.domain;
+        examDiv.appendChild(domainHeader);
+
+        domain.questions.forEach((q) => {
+          const qId = q.id || `Q${questionNumber}`;
+          questions.push({ 
+            id: qId, 
+            correct: q.correct_choice, 
+            explanation: q.explanation,
+            domain: domain.domain 
+          });
+          correctAnswers[qId] = q.correct_choice;
+
+          const container = document.createElement("div");
+          container.className = "question-container";
+          container.id = qId;
+
+          const qText = document.createElement("p");
+          // Prefix with question number (1-based)
+          qText.innerHTML = `<strong>${questionNumber}. ${qId}. ${q.question}</strong>`;
+          container.appendChild(qText);
+
+          const choices = document.createElement("div");
+          choices.className = "choices";
+          Object.entries(q.choices).forEach(([key, val]) => {
+            const label = document.createElement("label");
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = qId;
+            input.value = key;
+            label.appendChild(input);
+            label.append(` ${key}: ${val}`);
+            choices.appendChild(label);
+          });
+          container.appendChild(choices);
+          examDiv.appendChild(container);
+
+          const gridItem = document.createElement("div");
+          gridItem.className = "grid-item grid-yellow";
+          gridItem.id = `grid-${qId}`;
+          gridItem.innerText = qId.replace('Q', '');
+          gridBox.appendChild(gridItem);
+
+          questionNumber++;
+        });
+      });
+
+      document.getElementById("submit-btn").style.display = "inline-block";
+    }
+
+    // --- Move updateSubmissionHistory definition here so it is available before use ---
+    function updateSubmissionHistory() {
+      const savedExamsDiv = document.getElementById("saved-exams");
+      const historyDiv = document.getElementById("submission-history");
+      if (savedExamsDiv) savedExamsDiv.innerHTML = "";
+      historyDiv.innerHTML = "";
+      // Create exam selector
+      Object.keys(previousResults).forEach(examName => {
+        const examButton = document.createElement("div");
+        examButton.className = "exam-result";
+        examButton.style.cursor = "pointer";
+        examButton.innerHTML = `<strong>${examName}</strong>`;
+        examButton.onclick = () => showExamHistory(examName);
+        if (savedExamsDiv) savedExamsDiv.appendChild(examButton);
+      });
+    }
+
+    document.getElementById('examSelect').addEventListener('change', async function() {
+      const selectedFile = this.value;
+      if (!selectedFile) return;      const response = await fetch(`http://localhost:3000/examSIm/examsBank/${selectedFile}`);
+      const examData = await response.json();
+      currentExam = examData;
+      loadExam(examData);
+      startTime = Date.now();
+      if (examTimer) clearInterval(examTimer);
+      examTimer = startTimer();
+      
+      // Display exam info
+      document.getElementById("examInfo").innerHTML = `
+        <strong>${examData.examInfo.name}</strong><br>
+        Time Limit: ${examData.examInfo.totalTime} minutes<br>
+        Total Questions: ${examData.examInfo.totalQuestions}<br>
+        <div class="domain-distribution">
+          <h4>Domain Distribution:</h4>
+          ${Object.entries(examData.examInfo.domainDistribution)
+            .map(([domain, percentage]) => 
+              `${domain}: ${Math.round(percentage * 100)}%`
+            ).join('<br>')}
+        </div>
+      `;
+    });
+
+    // Remove any duplicate event listeners for examSelect
+    const examSelect = document.getElementById('examSelect');
+    examSelect.onchange = async function() {
+      const selectedFile = this.value;
+      if (!selectedFile) return;
+      try {
+        const response = await fetch(`http://localhost:3000/examSIm/examsBank/${selectedFile}`);
+        if (!response.ok) throw new Error('Failed to load exam JSON');
+        const examData = await response.json();
+        currentExam = examData;
+        loadExam(examData);
+        startTime = Date.now();
+        if (examTimer) clearInterval(examTimer);
+        examTimer = startTimer();
+        // Display exam info
+        document.getElementById("examInfo").innerHTML = `
+          <strong>${examData.examInfo.name}</strong><br>
+          Time Limit: ${examData.examInfo.totalTime} minutes<br>
+          Total Questions: ${examData.examInfo.totalQuestions}<br>
+          <div class="domain-distribution">
+            <h4>Domain Distribution:</h4>
+            ${Object.entries(examData.examInfo.domainDistribution)
+              .map(([domain, percentage]) => 
+                `${domain}: ${Math.round(percentage * 100)}%`
+              ).join('<br>')}
+          </div>
+        `;
+      } catch (e) {
+        document.getElementById("examInfo").innerHTML = `<span style='color:red'>Failed to load exam: ${e.message}</span>`;
+      }
+    };
+
+    function createExam(name, jsonData) {
+      examData[name] = jsonData;
+      localStorage.setItem('exam_data', JSON.stringify(examData));
+      updateExamSelect();
+    }
+
+    // On page load, fetch attempts from server and merge into localStorage
+    async function loadExamData() {
+      try {
+        const response = await fetch('http://localhost:3000/getExamResults');
+        if (response.ok) {
+          const serverResults = await response.json();
+          // Merge into localStorage format
+          let localResults = JSON.parse(localStorage.getItem('all_exam_results')) || {};
+          serverResults.forEach(entry => {
+            const { examId, examResult } = entry;
+            if (!localResults[examId]) localResults[examId] = [];
+            // Avoid duplicates by timestamp
+            if (!localResults[examId].some(r => r.timestamp === examResult.timestamp)) {
+              localResults[examId].push(examResult);
+            }
+          });
+          localStorage.setItem('all_exam_results', JSON.stringify(localResults));
+          previousResults = localResults;
+        } else {
+          previousResults = JSON.parse(localStorage.getItem('all_exam_results')) || {};
+        }
+      } catch (e) {
+        console.error('Failed to load attempts from server:', e);
+        previousResults = JSON.parse(localStorage.getItem('all_exam_results')) || {};
+      }
+      updateSubmissionHistory();
+      // Show stats for the first available exam by default
+      const examNames = Object.keys(previousResults);
+      if (examNames.length > 0) {
+        showExamHistory(examNames[0]);
+      }
+    }
+
+    // In saveExamResults, also POST to server
+    function saveExamResults(examId, results) {
+      previousResults[examId] = previousResults[examId] || [];
+      previousResults[examId].push(results);
+      localStorage.setItem('all_exam_results', JSON.stringify(previousResults));
+      // Save result to server for persistent storage
+      fetch('http://localhost:3000/saveExamResult', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ examId, examResult: results })
+      }).catch(e => console.error('Failed to save result to server:', e));
+      updateSubmissionHistory();
+      updateExamStatistics(examId);
+    }
+
+    // Add a manual refresh button for attempt history (optional)
+    const statsSection = document.querySelector('.stats-section');
+    const refreshBtn = document.createElement('button');
+    refreshBtn.textContent = 'Refresh Attempt History';
+    refreshBtn.className = 'btn';
+    refreshBtn.onclick = loadExamData;
+    statsSection.appendChild(refreshBtn);
 
     document.getElementById('examSelect').addEventListener('change', async function() {
       const selectedFile = this.value;
@@ -200,60 +428,41 @@
       updateExamSelect();
     }
 
-    function loadExamData() {
-      previousResults = JSON.parse(localStorage.getItem('all_exam_results')) || {};
-      updateSubmissionHistory();
+    // --- Define startTimer function ---
+    function startTimer() {
+      const timerDiv = document.getElementById("timer");
+      const totalTime = currentExam && currentExam.examInfo ? currentExam.examInfo.totalTime * 60 : 0;
+      let elapsed = 0;
+      let timeLeft = totalTime * 1000;
+      timerDiv.innerHTML = '';
+      const timerInterval = setInterval(() => {
+        elapsed = Date.now() - startTime;
+        timeLeft = Math.max(0, totalTime * 1000 - elapsed);
+        const minutesLeft = Math.floor(timeLeft / 60000);
+        const secondsLeft = Math.floor((timeLeft % 60000) / 1000);
+        if (timeLeft === 0) {
+          clearInterval(timerInterval);
+          document.getElementById("submit-btn").click();
+        }
+        timerDiv.innerHTML = `
+          Time Left: ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}<br>
+          Elapsed: ${Math.floor(elapsed/60000)}:${Math.floor((elapsed%60000)/1000).toString().padStart(2, '0')}
+        `;
+      }, 1000);
+      return timerInterval;
     }
 
-    function saveExamResults(examId, results) {
-      previousResults[examId] = previousResults[examId] || [];
-      previousResults[examId].push(results);
-      localStorage.setItem('all_exam_results', JSON.stringify(previousResults));
-      updateSubmissionHistory();
-      updateExamStatistics(examId);
-    }
-
-    function updateSubmissionHistory() {
-      const savedExamsDiv = document.getElementById("saved-exams");
-      const historyDiv = document.getElementById("submission-history");
-      savedExamsDiv.innerHTML = "";
-      historyDiv.innerHTML = "";
-      
-      // Create exam selector
-      Object.keys(previousResults).forEach(examName => {
-        const examButton = document.createElement("div");
-        examButton.className = "exam-result";
-        examButton.style.cursor = "pointer";
-        examButton.innerHTML = `<strong>${examName}</strong>`;
-        examButton.onclick = () => showExamHistory(examName);
-        savedExamsDiv.appendChild(examButton);
-      });
-    }
-
-    function updateExamSelect() {
-      const examSelect = document.getElementById("examSelect");
-      examSelect.innerHTML = `<option value="">-- Select an exam --</option>`;
-      
-      Object.keys(examData).forEach(examName => {
-        const option = document.createElement("option");
-        option.value = examName;
-        option.textContent = examName;
-        examSelect.appendChild(option);
-      });
-    }
-
+    // --- Define showExamHistory function ---
     function showExamHistory(examName) {
       const historyDiv = document.getElementById("submission-history");
       historyDiv.innerHTML = "";
-      
       const results = previousResults[examName] || [];
       results.slice().reverse().forEach((result, index) => {
         const date = new Date(result.timestamp);
         const incorrectQuestions = Object.keys(result.answers)
           .filter(qId => result.answers[qId] !== result.correctAnswers[qId])
-          .map(qId => qId.slice(1))  // Remove 'Q' prefix
-          .sort((a, b) => Number(a) - Number(b)); // Sort numerically
-        
+          .map(qId => qId.slice(1))
+          .sort((a, b) => Number(a) - Number(b));
         const resultDiv = document.createElement("div");
         resultDiv.className = "exam-result";
         resultDiv.innerHTML = `
@@ -265,240 +474,126 @@
         `;
         historyDiv.appendChild(resultDiv);
       });
-
       // Update exam statistics
       updateExamStatistics(examName);
     }
 
+    // --- Define updateExamStatistics function ---
     function updateExamStatistics(examId) {
       const statsSection = document.querySelector(".stats-section");
       const progressChart = document.getElementById("progressChart");
       const domainProgress = document.getElementById("domainProgress");
-
       const results = previousResults[examId] || [];
       if (results.length === 0) {
         statsSection.style.display = "none";
         return;
       }
-
       statsSection.style.display = "block";
-
       // Clear previous chart if it exists
       if (window.examChart) {
         window.examChart.destroy();
       }
-
       // Prepare data for the chart
       const labels = results.map((_, index) => `Attempt ${index + 1}`);
-      const scores = results.map(r => r.score);
-      const correctCounts = results.map(r => Object.keys(r.answers).filter(qId => r.answers[qId] === correctAnswers[qId]).length);
-      const wrongCounts = results.map(r => Object.keys(r.answers).filter(qId => r.answers[qId] !== correctAnswers[qId]).length);
-
+      // Use percentage for scores
+      const percentages = results.map(r => Math.round((r.score / r.total) * 100));
+      // --- Analytics: Per-question correctness history ---
+      // Build per-question stats EXCLUDING current attempt
+      const questionStats = {};
+      if (results.length > 1) {
+        for (let i = 0; i < results.length - 1; i++) {
+          const r = results[i];
+          Object.keys(r.answers).forEach(qid => {
+            if (!questionStats[qid]) questionStats[qid] = { correct: 0, total: 0 };
+            if (r.answers[qid] === r.correctAnswers[qid]) questionStats[qid].correct++;
+            questionStats[qid].total++;
+          });
+        }
+      }
+      // For current attempt, compare to average (only if more than 1 attempt)
+      const lastResult = results[results.length - 1];
+      let usuallyCorrectButMissed = 0;
+      let usuallyWrongButCorrect = 0;
+      if (results.length > 1) {
+        Object.keys(lastResult.answers).forEach(qid => {
+          const stat = questionStats[qid];
+          if (!stat || stat.total === 0) return;
+          const avgCorrect = stat.correct / stat.total;
+          const wasCorrect = lastResult.answers[qid] === lastResult.correctAnswers[qid];
+          if (avgCorrect > 0.5 && !wasCorrect) usuallyCorrectButMissed++;
+          if (avgCorrect < 0.5 && wasCorrect) usuallyWrongButCorrect++;
+        });
+      }
+      const totalQuestions = lastResult.total;
+      // Show stats in numbers (as percentage)
+      let statsHtml = `<div><strong>Attempts:</strong> ${results.length}</div>`;
+      if (results.length > 0) {
+        const lastPct = percentages[percentages.length - 1];
+        const prevPct = percentages.length > 1 ? percentages[percentages.length - 2] : null;
+        const avgPct = (percentages.reduce((a, b) => a + b, 0) / percentages.length).toFixed(2);
+        statsHtml += `<div><strong>Current Score:</strong> ${lastPct}%</div>`;
+        if (prevPct !== null) {
+          statsHtml += `<div><strong>Previous Score:</strong> ${prevPct}%</div>`;
+          statsHtml += `<div><strong>Change:</strong> ${(lastPct - prevPct) >= 0 ? '+' : ''}${(lastPct - prevPct)}%</div>`;
+        }
+        statsHtml += `<div><strong>Average Score:</strong> ${avgPct}%</div>`;
+        // Add change to average
+        const changeToAvg = (lastPct - avgPct).toFixed(2);
+        statsHtml += `<div><strong>Change to Avg:</strong> ${(changeToAvg >= 0 ? '+' : '') + changeToAvg}%</div>`;
+        // Analytics
+        if (results.length > 1) {
+          statsHtml += `<div style='color:#f44336'><strong>Correct on average, but missed now:</strong> ${usuallyCorrectButMissed} (${Math.round(usuallyCorrectButMissed/totalQuestions*100)}%)</div>`;
+          statsHtml += `<div style='color:#4caf50'><strong>Wrong on average, but correct now:</strong> ${usuallyWrongButCorrect} (${Math.round(usuallyWrongButCorrect/totalQuestions*100)}%)</div>`;
+        }
+      }
+      // Remove previous statsHtml if present
+      const oldStats = statsSection.querySelectorAll('.stats-numbers');
+      oldStats.forEach(e => e.remove());
+      const statsDiv = document.createElement('div');
+      statsDiv.className = 'stats-numbers';
+      statsDiv.innerHTML = statsHtml;
+      statsSection.querySelector('h3').after(statsDiv);
       // Create the chart
       window.examChart = new Chart(progressChart, {
         type: 'line',
         data: {
-          labels,
+          labels: labels,
           datasets: [
             {
-              label: 'Score',
-              data: scores,
+              label: 'Score (%)',
+              data: percentages,
               borderColor: '#4caf50',
-              tension: 0.1,
-              fill: false
-            },
-            {
-              label: 'Correct Answers',
-              data: correctCounts,
-              borderColor: '#2196f3',
-              tension: 0.1,
-              fill: false
-            },
-            {
-              label: 'Wrong Answers',
-              data: wrongCounts,
-              borderColor: '#f44336',
-              tension: 0.1,
-              fill: false
+              backgroundColor: 'rgba(76,175,80,0.1)',
+              fill: true
             }
           ]
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
           scales: {
-            y: {
-              beginAtZero: true,
-              title: {
-                display: true,
-                text: 'Number of Questions'
-              }
-            },
-            x: {
-              title: {
-                display: true,
-                text: 'Attempts'
-              }
-            }
+            y: { beginAtZero: true, max: 100 }
           }
         }
       });
-
-      // Update domain progress
-      domainProgress.innerHTML = "<h4>Domain Progress</h4>";
-      if (currentExam && currentExam.examInfo.domainDistribution) {
-        Object.entries(currentExam.examInfo.domainDistribution).forEach(([domain, percentage]) => {
-          const domainQuestions = questions.filter(q => q.domain === domain);
-          const lastResult = results[results.length - 1];
-          const correct = domainQuestions.filter(q => lastResult.answers[q.id] === correctAnswers[q.id]).length;
-          const total = domainQuestions.length;
-          
-          domainProgress.innerHTML += `
-            <div class="domain-progress">
-              <strong>${domain}</strong><br>
-              Score: ${correct}/${total} (${Math.round(correct/total * 100)}%)<br>
-              Target: ${Math.round(percentage * 100)}% of exam
-            </div>
-          `;
-        });
-      }
-    }
-
-    document.getElementById("jsonInput").addEventListener("change", function(event) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-
-      reader.onload = function(e) {
-        const data = JSON.parse(e.target.result);
-        currentExam = data;
-        loadExam(data);
-        startTime = Date.now();
-        startTimer();
-        
-        // Display exam info
-        document.getElementById("examInfo").innerHTML = `
-          <strong>${data.examInfo.name}</strong><br>
-          Time Limit: ${data.examInfo.totalTime} minutes<br>
-          Total Questions: ${data.examInfo.totalQuestions}
-        `;
-      };
-
-      reader.readAsText(file);
-    });
-
-    function startTimer() {
-      const timerDiv = document.getElementById("timer");
-      const endTime = Date.now() + (currentExam.examInfo.totalTime * 60 * 1000);
-      
-      const timerInterval = setInterval(() => {
-        const now = Date.now();
-        const timeLeft = Math.max(0, endTime - now);
-        const elapsed = now - startTime;
-        
-        const minutesLeft = Math.floor(timeLeft / 60000);
-        const secondsLeft = Math.floor((timeLeft % 60000) / 1000);
-        
-        if (timeLeft === 0) {
-          clearInterval(timerInterval);
-          document.getElementById("submit-btn").click();
+      // Domain progress (if available)
+      if (typeof getDomainProgress === 'function') {
+        const progress = getDomainProgress(examId);
+        if (progress) {
+          let html = '<h4>Domain Progress (last 2 attempts)</h4>';
+          Object.entries(progress).forEach(([domain, stats]) => {
+            html += `<div><strong>${domain}:</strong> ${stats.correct}/${stats.total} (${stats.percentage}%)`;
+            if (stats.improvement > 0) html += ` <span style='color:green'>(+${stats.improvement})</span>`;
+            if (stats.improvement < 0) html += ` <span style='color:red'>(${stats.improvement})</span>`;
+            html += '</div>';
+          });
+          domainProgress.innerHTML = html;
+        } else {
+          domainProgress.innerHTML = '';
         }
-        
-        timerDiv.innerHTML = `
-          Time Left: ${minutesLeft}:${secondsLeft.toString().padStart(2, '0')}<br>
-          Elapsed: ${Math.floor(elapsed/60000)}:${Math.floor((elapsed%60000)/1000).toString().padStart(2, '0')}
-        `;
-      }, 1000);
-
-      return timerInterval;
-    }
-
-    function getDomainProgress(examId) {
-      const results = previousResults[examId] || [];
-      if (results.length < 2) return null;
-
-      const last = results[results.length - 1];
-      const secondLast = results[results.length - 2];
-      const progress = {};
-
-      currentExam.domains.forEach(domain => {
-        const domainQuestions = questions.filter(q => q.domain === domain.domain);
-        const correct = domainQuestions.filter(q => last.answers[q.id] === q.correct).length;
-        const prevCorrect = domainQuestions.filter(q => secondLast.answers[q.id] === q.correct).length;
-        const improvement = correct - prevCorrect;
-
-        progress[domain.domain] = {
-          correct,
-          total: domainQuestions.length,
-          improvement,
-          percentage: Math.round((correct / domainQuestions.length) * 100)
-        };
-      });
-
-      return progress;
-    }
-
-    function loadExam(data) {
-      const examDiv = document.getElementById("exam");
-      const gridBox = document.getElementById("gridBox");
-      examDiv.innerHTML = "";
-      document.getElementById("result").innerHTML = "";
-      gridBox.innerHTML = "";
-      questions = [];
-      correctAnswers = {};
-
-      let qCounter = 0;
-      data.domains.forEach(domain => {
-        // Add domain header
-        const domainHeader = document.createElement("h3");
-        domainHeader.textContent = domain.domain;
-        examDiv.appendChild(domainHeader);
-
-        domain.questions.forEach((q, index) => {
-          const qId = q.id || `Q${qCounter + 1}`;
-          questions.push({ 
-            id: qId, 
-            correct: q.correct_choice, 
-            explanation: q.explanation,
-            domain: domain.domain 
-          });
-          correctAnswers[qId] = q.correct_choice;
-
-          const container = document.createElement("div");
-          container.className = "question-container";
-          container.id = qId;
-
-          const qText = document.createElement("p");
-          qText.innerHTML = `<strong>${qId}. ${q.question}</strong>`;
-          container.appendChild(qText);
-
-          const choices = document.createElement("div");
-          choices.className = "choices";
-
-          Object.entries(q.choices).forEach(([key, val]) => {
-            const label = document.createElement("label");
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.name = qId;
-            input.value = key;
-            label.appendChild(input);
-            label.append(` ${key}: ${val}`);
-            choices.appendChild(label);
-          });
-
-          container.appendChild(choices);
-          examDiv.appendChild(container);
-
-          const gridItem = document.createElement("div");
-          gridItem.className = "grid-item grid-yellow";
-          gridItem.id = `grid-${qId}`;
-          gridItem.innerText = qId.replace('Q', '');
-          gridBox.appendChild(gridItem);
-
-          qCounter++;
-        });
-      });
-
-      document.getElementById("submit-btn").style.display = "inline-block";
+      }
     }
 
     document.getElementById("submit-btn").onclick = function() {
@@ -529,9 +624,14 @@
           wrong++;
           container.classList.add("incorrect");
           incorrectQuestions.push(q.id);
-          const explanation = document.createElement("p");
-          explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
-          container.appendChild(explanation);
+          // Always show explanation for incorrect questions
+          let explanation = container.querySelector('.explanation');
+          if (!explanation) {
+            explanation = document.createElement("p");
+            explanation.className = 'explanation';
+            explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
+            container.appendChild(explanation);
+          }
           gridItem.className = "grid-item grid-red";
         }
       });
@@ -550,11 +650,9 @@
         domains: Object.fromEntries(questions.map(q => [q.id, q.domain]))
       };
 
-      // Save results to localStorage
+      // Save results using unified function
       const examId = currentExam.examInfo.name;
-      previousResults[examId] = previousResults[examId] || [];
-      previousResults[examId].push(examResult);
-      localStorage.setItem('all_exam_results', JSON.stringify(previousResults));
+      saveExamResults(examId, examResult);
 
       // Calculate wrong answers that were wrong in previous attempt
       let wrongBefore = 0;
@@ -576,48 +674,10 @@
       updateExamStatistics(examId);
     };
 
-    document.getElementById("create-exam-btn").onclick = function() {
-      const newExamJson = document.getElementById("newExamJson").value.trim();
-      if (!newExamJson) {
-        alert("Please enter or paste the exam JSON.");
-        return;
-      }
-
-      try {
-        const examJson = JSON.parse(newExamJson);
-        const examName = document.getElementById("examName").value.trim();
-        if (!examName) {
-          alert("Please enter an exam name.");
-          return;
-        }
-        createExam(examName, examJson);
-        document.getElementById("newExamJson").value = "";
-        document.getElementById("examName").value = "";
-        alert("New exam created and saved.");
-      } catch (e) {
-        alert("Invalid JSON format. Please check your JSON data.");
-      }
-    };
-
-    document.getElementById("examSelect").addEventListener("change", function() {
-      const examName = this.value;
-      const loadButton = document.getElementById("load-exam-btn");
-      loadButton.disabled = !examName;
-    });
-
-    document.getElementById("load-exam-btn").onclick = function() {
-      const examName = document.getElementById("examSelect").value;
-      if (!examName) return;
-
-      currentExamName = examName;
-      document.getElementById("examName").value = examName;
-      loadExam(examData[examName]);
-      startTime = Date.now();
-      startTimer();
-    };
-
     // Call loadAvailableExams on page load
     loadAvailableExams();
+    // Call loadExamData on page load
+    loadExamData();
   </script>
 </body>
 </html>
