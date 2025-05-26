@@ -1,0 +1,102 @@
+{
+  "examInfo": {
+    "name": "GCP Professional Data Engineer",
+    "description": "Practice exam for Google Cloud Professional Data Engineer certification",
+    "totalTime": 120,
+    "totalQuestions": 6,
+    "domainDistribution": {
+      "Designing Data Processing Systems": 0.4,
+      "Building and Operationalizing Data Processing Systems": 0.3,
+      "Operationalizing Machine Learning Models": 0.3
+    }
+  },
+  "domains": [
+    {
+      "domain": "Designing Data Processing Systems",
+      "questions": [
+        {
+          "id": "DPS1",
+          "question": "You need to design a data processing system that handles both batch and real-time data. Which service should you use for real-time ingestion?",
+          "choices": {
+            "A": "Cloud Pub/Sub",
+            "B": "Cloud Dataprep",
+            "C": "BigQuery",
+            "D": "Cloud Dataflow"
+          },
+          "correct_choice": "A",
+          "explanation": "Cloud Pub/Sub is a scalable, real-time messaging service that can be used for ingesting streaming data."
+        },
+        {
+          "id": "DPS2",
+          "question": "Which GCP service is best suited for creating a unified pipeline that handles both stream and batch data?",
+          "choices": {
+            "A": "Cloud Functions",
+            "B": "Cloud Dataflow",
+            "C": "Cloud Composer",
+            "D": "Cloud Run"
+          },
+          "correct_choice": "B",
+          "explanation": "Cloud Dataflow supports both stream and batch data processing, making it suitable for unified pipelines."
+        }
+      ]
+    },
+    {
+      "domain": "Building and Operationalizing Data Processing Systems",
+      "questions": [
+        {
+          "id": "BPS1",
+          "question": "You want to automate and orchestrate a series of GCP data processing tasks. What should you use?",
+          "choices": {
+            "A": "Cloud Scheduler",
+            "B": "Cloud Functions",
+            "C": "Cloud Composer",
+            "D": "Cloud Data Fusion"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Composer is based on Apache Airflow and is used for workflow orchestration."
+        },
+        {
+          "id": "BPS2",
+          "question": "Which GCP service provides a code-free interface for building ETL pipelines?",
+          "choices": {
+            "A": "Cloud Dataflow",
+            "B": "Cloud Composer",
+            "C": "Cloud Data Fusion",
+            "D": "BigQuery ML"
+          },
+          "correct_choice": "C",
+          "explanation": "Cloud Data Fusion offers a graphical interface for building ETL/ELT pipelines without writing code."
+        }
+      ]
+    },
+    {
+      "domain": "Operationalizing Machine Learning Models",
+      "questions": [
+        {
+          "id": "ML1",
+          "question": "You need to deploy a trained TensorFlow model to serve real-time predictions. Which service should you use?",
+          "choices": {
+            "A": "BigQuery ML",
+            "B": "AI Platform Prediction",
+            "C": "Cloud AutoML",
+            "D": "Cloud Functions"
+          },
+          "correct_choice": "B",
+          "explanation": "AI Platform Prediction is designed to host trained models and serve predictions in real time."
+        },
+        {
+          "id": "ML2",
+          "question": "You want to retrain a model automatically when new data is available. Which service helps you schedule this retraining?",
+          "choices": {
+            "A": "Cloud Scheduler",
+            "B": "Cloud Pub/Sub",
+            "C": "Vertex AI Pipelines",
+            "D": "Cloud Logging"
+          },
+          "correct_choice": "C",
+          "explanation": "Vertex AI Pipelines allow you to automate the ML workflow, including retraining when new data is ingested."
+        }
+      ]
+    }
+  ]
+}
