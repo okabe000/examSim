@@ -137,6 +137,10 @@ h1, h2, h3, h4 {
     background-color: rgba(231, 76, 60, 0.1);
 }
 
+.partial {
+    background: #fff9c4 !important; /* light yellow for partial/partial-correct */
+}
+
 .choices {
     width: 100%;
     margin-top: 0.75rem;
@@ -192,7 +196,10 @@ h1, h2, h3, h4 {
     transform: scale(1.1);
 }
 
-.grid-yellow { background-color: var(--warning-color); }
+.grid-yellow {
+    background: #fff9c4 !important;
+}
+
 .grid-green { background-color: var(--success-color); }
 .grid-red { background-color: var(--danger-color); }
 

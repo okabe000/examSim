@@ -26,20 +26,47 @@ class ExamUI {
                 historyDiv.style.display = 'none';
             }
         });
-    }
-
-    static renderExamInfo(examData) {
+    }    static renderExamInfo(examData) {
         const info = examData.examInfo;
         document.getElementById('examInfo').innerHTML = `
-            <h3>${info.name}</h3>
-            <p>Time Limit: ${info.totalTime} minutes</p>
-            <p>Total Questions: ${info.totalQuestions}</p>
-            <div class="domain-distribution">
-                <h4>Domain Distribution:</h4>
-                ${Object.entries(info.domainDistribution)
-                    .map(([domain, percentage]) => 
-                        `<div>${domain}: ${Math.round(percentage * 100)}%</div>`
-                    ).join('')}
+            <div class="exam-info-card">
+                <h3 class="exam-title">${info.name}</h3>
+                <div class="exam-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>${info.totalTime} minutes</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>${info.totalQuestions} Questions</span>
+                    </div>
+                </div>
+                <div class="domain-distribution">
+                    <h4>Domain Distribution</h4>
+                    <table class="domain-table">
+                        <thead>
+                            <tr>
+                                <th>Domain</th>
+                                <th>Percentage</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(info.domainDistribution)
+                                .map(([domain, percentage]) => `
+                                    <tr>
+                                        <td>${domain}</td>
+                                        <td>${Math.round(percentage * 100)}%</td>
+                                        <td>
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: ${Math.round(percentage * 100)}%"></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         `;
     }
@@ -81,16 +108,19 @@ class ExamUI {
 
         const qText = document.createElement("p");
         qText.innerHTML = `<strong>${number}. ${qId}. ${question.question}</strong>`;
-        container.appendChild(qText);        const choices = document.createElement("div");
+        container.appendChild(qText);
+        const choices = document.createElement("div");
         choices.className = "choices";
         // Create a list for vertical layout
         const choiceList = document.createElement("div");
         choiceList.className = "choice-list";
+        // Determine if this is a multi-answer question
+        const isMulti = Array.isArray(question.correct_choice);
         Object.entries(question.choices).forEach(([key, val]) => {
             const label = document.createElement("label");
             const input = document.createElement("input");
-            input.type = "radio";
-            input.name = qId;
+            input.type = isMulti ? "checkbox" : "radio";
+            input.name = isMulti ? qId + '[]' : qId;
             input.value = key;
             label.appendChild(input);
             label.append(` ${key}: ${val}`);
@@ -116,7 +146,6 @@ class ExamUI {
     static renderTimer(remaining) {
         const minutes = Math.floor(remaining / 60);
         const seconds = remaining % 60;
-        
         document.getElementById('timer').innerHTML = `
             <div class="timer">
                 Time Remaining: ${minutes}:${seconds.toString().padStart(2, '0')}
