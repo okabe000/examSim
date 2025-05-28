@@ -26,7 +26,7 @@ A web-based exam simulator for practicing with custom exam question banks in JSO
 ### Setup
 1. Clone this repository:
    ```sh
-   git clone <your-repo-url>
+   git clone https://github.com/okabe000/examSim
    cd examSIm/examSim
    ```
 2. Place your exam JSON files in the `examsBank/` directory.
