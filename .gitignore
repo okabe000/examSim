@@ -1,0 +1,23 @@
+# Node modules and dependencies
+node_modules/
+
+# Local environment files
+.env
+*.env
+
+# Exam results and user data
+exam_results.json
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE and editor folders
+.vscode/
+.idea/
+
+# Exams bank (should not be versioned)
+examsBank/
+
+# Webscraper output or cache
+webscraper/
