@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .domain-progress {
+            margin-top: 30px;
+        }
+        .question-analysis {
+            margin-top: 30px;
+        }
+        .question-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+        .correct { color: #28a745; }
+        .incorrect { color: #dc3545; }
+        .back-button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Exam Results Details</h1>
+            <button class="back-button" onclick="window.location.href='index.html'">Back to Dashboard</button>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Score</h3>
+                <div id="scoreDisplay"></div>
+            </div>
+            <div class="stat-card">
+                <h3>Time Taken</h3>
+                <div id="timeDisplay"></div>
+            </div>
+            <div class="stat-card">
+                <h3>Date</h3>
+                <div id="dateDisplay"></div>
+            </div>
+        </div>
+
+        <div class="domain-progress">
+            <h2>Domain Performance</h2>
+            <canvas id="domainChart"></canvas>
+        </div>
+
+        <div class="question-analysis">
+            <h2>Question Analysis</h2>
+            <div id="questionList"></div>
+        </div>
+    </div>
+
+    <script>
+        function getExamResult() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const examData = JSON.parse(localStorage.getItem('examResults') || '[]');
+            const timestamp = parseInt(urlParams.get('timestamp'));
+            return examData.find(exam => exam.examResult.timestamp === timestamp);
+        }
+
+        function displayExamDetails() {
+            const exam = getExamResult();
+            if (!exam) {
+                alert('Exam result not found');
+                return;
+            }
+
+            const result = exam.examResult;
+            
+            // Display basic stats
+            document.getElementById('scoreDisplay').textContent = 
+                `${result.score}/${result.total} (${((result.score/result.total)*100).toFixed(1)}%)`;
+            document.getElementById('timeDisplay').textContent = 
+                `${result.time} minutes`;
+            document.getElementById('dateDisplay').textContent = 
+                new Date(result.timestamp).toLocaleDateString();
+
+            // Create domain statistics
+            const domainStats = calculateDomainStats(result);
+            createDomainChart(domainStats);
+
+            // Display question analysis
+            displayQuestionAnalysis(result);
+        }
+
+        function calculateDomainStats(result) {
+            const domainStats = {};
+            Object.entries(result.domains).forEach(([questionId, domain]) => {
+                if (!domainStats[domain]) {
+                    domainStats[domain] = { total: 0, correct: 0 };
+                }
+                domainStats[domain].total++;
+                if (!result.incorrectQuestions.includes(questionId)) {
+                    domainStats[domain].correct++;
+                }
+            });
+            return domainStats;
+        }
+
+        function createDomainChart(domainStats) {
+            const ctx = document.getElementById('domainChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(domainStats),
+                    datasets: [{
+                        label: 'Domain Performance',
+                        data: Object.values(domainStats).map(stats => 
+                            (stats.correct / stats.total) * 100
+                        ),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Percentage Correct'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function displayQuestionAnalysis(result) {
+            const container = document.getElementById('questionList');
+            Object.entries(result.answers).forEach(([questionId, answer]) => {
+                const isCorrect = !result.incorrectQuestions.includes(questionId);
+                const correctAnswer = result.correctAnswers[questionId];
+                const domain = result.domains[questionId];
+
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                questionCard.innerHTML = `
+                    <h4>${questionId} - ${domain}</h4>
+                    <p class="${isCorrect ? 'correct' : 'incorrect'}">
+                        Your Answer: ${answer}
+                        ${isCorrect ? '✓' : `✗ (Correct: ${correctAnswer})`}
+                    </p>
+                `;
+                container.appendChild(questionCard);
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', displayExamDetails);
+    </script>
+</body>
+</html>

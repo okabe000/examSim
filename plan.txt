@@ -1,0 +1,7 @@
+potential improvement
+- show exam completion all time
+- incorrect ratio per domain, what incorect answers domains
+- histogram ,time per question
+- pause and resume later
+- time remaining in % and minutes not seconds
+- reval correct answers, without submitting only show it on the UI

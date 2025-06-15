@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>General Exam Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-material-ui@4/material-ui.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <h1>Exam Simulator</h1>
+            <div id="exam"></div>
+        </div>
+        <div class="side-menu" id="side-menu">
+            <h2>Available Exams</h2>
+            <select id="examSelect" class="exam-selector">
+                <option value="">-- Select an exam --</option>
+            </select>
+            <div id="examInfo" class="exam-info"></div>
+            <div id="timer"></div>
+            <button id="submit-btn" style="display:none;">Submit Exam</button>
+            <div class="grid-box" id="gridBox"></div>
+            <div id="result"></div>
+            
+            <div class="stats-section">
+                <h3>Exam Statistics</h3>
+                <div id="examStats"></div>
+            </div>
+            
+            <div id="submission-history"></div>
+        </div>    </div>
+    <script src="static/js/api.js"></script>
+    <script src="static/js/state.js"></script>
+    <script src="static/js/ui.js"></script>
+    <script src="static/js/controller.js"></script>
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new ExamController();
+        });
+    </script>
+    </script>
+</body>
+</html>
