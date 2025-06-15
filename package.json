@@ -1,0 +1,22 @@
+{
+  "name": "exam-simulator",
+  "version": "1.0.0",
+  "description": "Exam Simulator with Database Support",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "install-deps": "npm install sqlite3"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  },
+  "keywords": [
+    "exam",
+    "simulator",
+    "testing",
+    "education"
+  ],
+  "author": "Exam System",
+  "license": "MIT"
+}

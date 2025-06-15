@@ -4,7 +4,9 @@ class ExamController {
         this.remainingTime = null;
         this.setupEventListeners();
         this.loadInitialData();
-    }    async loadExamHistory() {
+    }
+
+    async loadExamHistory() {
         try {
             const results = await ExamAPI.getExamResults();
             ExamUI.renderExamHistory(results);
@@ -28,7 +30,11 @@ class ExamController {
                 ExamUI.renderExam(examData);
                 ExamUI.renderExamInfo(examData);
                 await this.loadExamHistory();
-                this.startExamTimer();
+                
+                // Only start timer if exam has time limit
+                if (examData.examInfo.totalTime) {
+                    this.startExamTimer();
+                }
             } catch (error) {
                 document.getElementById('examInfo').innerHTML = 
                     `<div style="color: red">Failed to load exam: ${error.message}</div>`;
@@ -36,6 +42,18 @@ class ExamController {
         });
 
         document.getElementById('submit-btn').onclick = this.handleSubmit.bind(this);
+
+        // Add sync button
+        let syncBtn = document.getElementById('sync-btn');
+        if (!syncBtn) {
+            syncBtn = document.createElement('button');
+            syncBtn.id = 'sync-btn';
+            syncBtn.textContent = '🔄 Sync Exam Files';
+            syncBtn.style.marginTop = '10px';
+            syncBtn.style.width = '100%';
+            syncBtn.onclick = this.handleSyncFiles.bind(this);
+            document.getElementById('side-menu').insertBefore(syncBtn, document.getElementById('examSelect'));
+        }
 
         // Add pause/resume button
         let pauseBtn = document.getElementById('pause-btn');
@@ -57,13 +75,53 @@ class ExamController {
                 pauseBtn.textContent = 'Pause Timer';
             }
         };
-    }    async loadInitialData() {
+    }
+
+    async handleSyncFiles() {
+        const syncBtn = document.getElementById('sync-btn');
+        const originalText = syncBtn.textContent;
+        
         try {
-            const exams = await ExamAPI.getExams();
-            ExamUI.renderExamSelect(exams);
-            // Remove initial history render as it should only show when exam is selected
+            syncBtn.textContent = '⏳ Syncing...';
+            syncBtn.disabled = true;
+            
+            const result = await ExamAPI.syncExamFiles();
+            
+            // Refresh exam list
+            await this.loadInitialData();
+            
+            alert(`Sync completed!\nProcessed: ${result.processed || 0} files\nClusters: ${result.clusters || 0}`);
+        } catch (error) {
+            console.error('Sync failed:', error);
+            alert('Failed to sync exam files: ' + error.message);
+        } finally {
+            syncBtn.textContent = originalText;
+            syncBtn.disabled = false;
+        }
+    }
+
+    async loadInitialData() {
+        try {
+            // Try to sync files first to ensure database is up to date
+            await ExamAPI.syncExamFiles();
+            
+            const examClusters = await ExamAPI.getExamClusters();
+            ExamUI.renderExamSelect(examClusters);
         } catch (error) {
             console.error('Error loading initial data:', error);
+            // Fallback to regular exam loading if sync fails
+            try {
+                const exams = await ExamAPI.getExams();
+                // Convert to simple cluster format for backward compatibility
+                const simpleClusters = [{
+                    id: 'default',
+                    title: 'All Exams',
+                    exams: exams
+                }];
+                ExamUI.renderExamSelect(simpleClusters);
+            } catch (fallbackError) {
+                console.error('Fallback loading also failed:', fallbackError);
+            }
         }
     }
 
@@ -72,6 +130,7 @@ class ExamController {
         this.timerPaused = false;
         this.remainingTime = null;
         document.getElementById('pause-btn').style.display = 'inline-block';
+        
         examState.examTimer = setInterval(() => {
             if (this.timerPaused) return;
             const remaining = this.remainingTime !== null ? this.remainingTime : examState.getRemainingTime();
@@ -82,6 +141,7 @@ class ExamController {
             }
         }, 1000);
     }
+
     pauseTimer() {
         if (!this.timerPaused) {
             this.timerPaused = true;
@@ -89,16 +149,18 @@ class ExamController {
             if (examState.examTimer) clearInterval(examState.examTimer);
         }
     }
+
     resumeTimer() {
         if (this.timerPaused) {
             this.timerPaused = false;
-            // Adjust startTime so timer resumes correctly
             if (this.remainingTime !== null) {
                 examState.startTime = Date.now() - ((examState.currentExam.examInfo.totalTime * 60 - this.remainingTime) * 1000);
             }
             this.startExamTimer();
         }
-    }    async handleSubmit() {
+    }
+
+    async handleSubmit() {
         if (!examState.currentExam) return;
 
         // Stop the timer when exam is submitted
@@ -121,6 +183,7 @@ class ExamController {
                 const radio = document.querySelector(`input[name='${q.id}']:checked`);
                 selected = radio ? radio.value : null;
             }
+            
             const container = document.getElementById(q.id);
             const gridItem = document.getElementById(`grid-${q.id}`);
             const choiceInputs = container.querySelectorAll('input');
@@ -135,21 +198,21 @@ class ExamController {
                 const val = input.value;
                 const isChecked = isMulti ? selected.includes(val) : selected === val;
                 const isCorrect = correctChoices.includes(val);
-                // Mark examiner's selection
+                
                 if (isChecked) {
                     label.style.fontWeight = 'bold';
                     label.style.textDecoration = 'underline';
                 }
-                // Highlight correct answers
+                
                 if (isCorrect) {
-                    label.style.background = '#c8e6c9'; // green
+                    label.style.background = '#c8e6c9';
                 }
-                // Highlight wrong choices selected
+                
                 if (isChecked && !isCorrect) {
-                    label.style.background = '#ffcdd2'; // red
+                    label.style.background = '#ffcdd2';
                     wrongSelected = true;
                 }
-                // Missed correct
+                
                 if (!isChecked && isCorrect) {
                     missedCorrect = true;
                 }
@@ -157,17 +220,16 @@ class ExamController {
 
             if (isMulti) {
                 answers[q.id] = selected;
-                // Score: +1 for each correct selected
                 correctCount = selected.filter(val => correctChoices.includes(val)).length;
                 score += correctCount;
                 total += correctChoices.length;
-                // Determine marking
+                
                 if (correctCount === correctChoices.length && !wrongSelected && !missedCorrect) {
                     container.classList.add("correct");
                     gridItem.className = "grid-item grid-green";
                 } else if (correctCount > 0) {
                     container.classList.add("partial");
-                    container.style.background = '#fff9c4'; // light yellow
+                    container.style.background = '#fff9c4';
                     gridItem.className = "grid-item grid-yellow";
                     incorrectQuestions.push(q.id);
                 } else {
@@ -175,6 +237,7 @@ class ExamController {
                     gridItem.className = "grid-item grid-red";
                     incorrectQuestions.push(q.id);
                 }
+                
                 if (correctCount < correctChoices.length || wrongSelected) {
                     const explanation = document.createElement("p");
                     explanation.className = "explanation";
@@ -184,7 +247,6 @@ class ExamController {
             } else {
                 if (!selected) {
                     gridItem.className = "grid-item grid-yellow";
-                    // highlight correct answer
                     choiceInputs.forEach(input => {
                         if (input.value === q.correct) {
                             input.parentElement.style.background = '#c8e6c9';
@@ -192,8 +254,10 @@ class ExamController {
                     });
                     return;
                 }
+                
                 answers[q.id] = selected;
                 total += 1;
+                
                 if (selected === q.correct) {
                     score++;
                     container.classList.add("correct");
@@ -202,7 +266,7 @@ class ExamController {
                     container.classList.add("incorrect");
                     gridItem.className = "grid-item grid-red";
                     incorrectQuestions.push(q.id);
-                    // highlight correct answer
+                    
                     choiceInputs.forEach(input => {
                         if (input.value === q.correct) {
                             input.parentElement.style.background = '#c8e6c9';
@@ -211,6 +275,7 @@ class ExamController {
                             input.parentElement.style.background = '#ffcdd2';
                         }
                     });
+                    
                     const explanation = document.createElement("p");
                     explanation.className = "explanation";
                     explanation.innerHTML = `<strong>Explanation:</strong> ${q.explanation}`;
@@ -218,49 +283,59 @@ class ExamController {
                 }
             }
         });
+
         const examResult = {
             timestamp: Date.now(),
             score,
             total,
             time: examState.getElapsedTime(),
             answers,
-            incorrectQuestions
+            incorrectQuestions,
+            isRetake: examState.currentExam.isRetake || false
         };
+
         try {
             await ExamAPI.saveExamResult(examState.currentExam.examInfo.name, examResult);
 
             // Get all results to check if this is a new best score
             const allResults = await ExamAPI.getExamResults();
             const examResults = allResults.filter(r => r.examId === examState.currentExam.examInfo.name);
-            // Calculate current score percentage
-            const currentScore = (score / examResult.total * 100).toFixed(1);
+            const bestScore = Math.max(...examResults.map(r => r.examResult.score / r.examResult.total * 100));
+            const currentScore = score / total * 100;
 
-            // Calculate previous best average
-            const previousBest = examResults
-                .slice(0, -1) // Exclude current attempt
-                .reduce((best, result) => {
-                    const attemptScore = (result.examResult.score / result.examResult.total * 100);
-                    return Math.max(best, attemptScore);
-                }, 0);
-
-            // Show score alert with celebration if it's a new best
-            let message = `Your Score: ${score}/${examResult.total} (${currentScore}%)\n`;
-            message += `Time taken: ${examResult.time} seconds\n`;
-            if (examState.currentExam.examInfo.totalTime) {
-                const timeRemaining = examState.getRemainingTime();
-                if (timeRemaining > 0) {
-                    message += `Time remaining: ${Math.floor(timeRemaining / 60)}:${(timeRemaining % 60).toString().padStart(2, '0')}\n`;
-                }
+            // Show results with celebration if it's a new best score
+            if (currentScore === bestScore && examResults.length > 1) {
+                this.celebrateNewBestScore(currentScore);
             }
-            if (currentScore > previousBest) {
-                message += '🎉 Congratulations! This is your new best score! 🎉';
-            }
-            alert(message);
 
-            await this.loadExamHistory();
             ExamUI.renderResults(examResult);
+            await this.loadExamHistory();
+            
         } catch (error) {
             console.error('Error saving exam result:', error);
+            alert('Failed to save exam result: ' + error.message);
         }
     }
+
+    celebrateNewBestScore(score) {
+        // Confetti animation
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+
+        // SweetAlert notification
+        Swal.fire({
+            title: '🎉 New Best Score!',
+            text: `Congratulations! You achieved ${score.toFixed(1)}% - your best score yet!`,
+            icon: 'success',
+            confirmButtonText: 'Awesome!',
+            timer: 5000,
+            timerProgressBar: true
+        });
+    }
 }
+
+// Global reference for the controller
+let examController;
